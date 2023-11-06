@@ -1,0 +1,29 @@
+===> RewriteCond %{REQUEST_FILENAME} !-f
+    c'est une condition qui verifie si l'URL demandée ne correspond pas à un fichier existant
+===> RewriteCond %{REQUEST_FILENAME} !-d
+    c'est une condition qui verifie si l'URL demandée ne correspond pas à un répertoire existant
+
+- RewriteCond : directive Apache indique d'ecrire une condition de réécriture
+- %{REQUEST_FILENAME} : variable d'environnement Apache qui contient le chemin complet de l'URL
+- !-f : '!' signifie 'non' et 'f' signifie 'fichier' donc elle signifie "n'est pas le fichier "
+- !-d : '!' signifie 'non' et 'd' signifie 'répertoire' donc elle signifie "n'est pas un répertoire "
+
+
+===> RewriteRule ^(.*)$ index.php?action=$1 [NC,L]
+
+- RewriteRule : directive Apache indique de spécifier une règle de réécriture.
+- ^(.*)$ : C'est la première partie de la règle, signifie correspond à n'importe quelle URL.
+- index.php?action=$1 : C'est la deuxième partie de la règle. Il pointe vers "index.php" et ajoute un paramètre "action" avec la valeur correspondant à ce qui a été capturé par "^(.*)$".
+- [NC,L] : [NC] signifie "No Case" cad l'URL peut être majuscules ou miniscules.
+           [L] signifie "Last" cad si cette règle est appliquée, les règles de réécriture ulterieures ne seront pas évaluées.
+
+
+
+
+
+
+
+
+
+http://localhost/KeepNote/Note/Update_note/<?= $value['id'] ?> 
+data-bs-toggle="modal" data-bs-target="#updateModal"

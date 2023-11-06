@@ -1,0 +1,6 @@
+Etape pour lancer cette application:
+1 - Entrer dans la barre d'URL : http://localhost/KeepNote/MVC/ArchiveControl/home
+2 - Authentification d'identifié :
+        username : test
+        password : test
+3 - Bonne chance pour le reste...

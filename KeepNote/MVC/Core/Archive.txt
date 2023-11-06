@@ -1,0 +1,100 @@
+<?php
+
+class Archive
+{
+    private $pdo;
+    private $pdoStatement;
+
+    public function __construct()
+    {
+        $this->pdo = new PDO('mysql:host=localhost;dbname=keepnote', 'root', '');
+    }
+
+    public function read($id)
+    {
+        $this->pdoStatement = $this->pdo->prepare('SELECT * FROM archive WHERE id = :id');
+
+        $this->pdoStatement->bindValue(':id', $id, PDO::PARAM_INT);
+
+        $result = $this->pdoStatement->execute();
+
+        if ($result) {
+            $archive = $this->pdoStatement->fetchObject('Models\Entity\Archive');
+
+            if ($archive === false) {
+
+                return null;
+            } else {
+
+                return $archive;
+            }
+        } else {
+
+            return false;
+        }
+    }
+
+
+    public function readAll()
+    {
+        $this->pdoStatement = $this->pdo->query('SELECT * FROM archive ORDER BY date ASC');
+
+        $archives = [];
+
+        while ($archive = $this->pdoStatement->fetchObject('Models\Entity\Archive')) {
+
+            $archives[] = $archive;
+        }
+
+        return $archives;
+    }
+
+    private function create(Archival &$archive)
+    {
+        $this->pdoStatement = $this->pdo->prepare('INSERT INTO archive VALUES (NULL, :titre, :contenu)');
+
+        $this->pdoStatement->bindValue(':titre', $archive->getTitre(), PDO::PARAM_STR);
+        $this->pdoStatement->bindValue(':contenu', $archive->getContenu(), PDO::PARAM_STR);
+
+        $result = $this->pdoStatement->execute();
+
+        if (!$result) {
+            return false;
+        } else {
+            $id = $this->pdo->lastInsertId();
+            $archive = $this->read($id);
+
+            return true;
+        }
+    }
+
+    private function update(Archival &$archive)
+    {
+        $this->pdoStatement = $this->pdo->prepare('UPDATE archive SET titre=:titre, contenu=:contenu WHERE id=:id LIMIT 1');
+
+        $this->pdoStatement->bindValue(':titre', $archive->getTitre(), PDO::PARAM_STR);
+        $this->pdoStatement->bindValue(':contenu', $archive->getContenu(), PDO::PARAM_STR);
+
+        return $this->pdoStatement->execute();
+    }
+
+    public function delete(Archival &$archive)
+    {
+        $this->pdoStatement = $this->pdo->prepare('DELETE FROM archive WHERE id=:id LIMIT 1');
+
+        $this->pdoStatement->bindValue(':id', $archive->getId(), PDO::PARAM_INT);
+
+        return $this->pdoStatement->execute();
+    }
+
+    public function save(Archival &$archive)
+    {
+        if (is_null($archive->getId())) {
+
+            return $this->create($archive);
+        } else {
+
+            return $this->update($archive);
+        }
+    }
+}
